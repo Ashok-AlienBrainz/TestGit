@@ -1,0 +1,51 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 05-12-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+
+
+  <div class="slds-p-around_medium">
+    <div class="slds-form">
+
+      <div class="slds-form-element slds-m-bottom_large">
+        <div class="slds-form-element__control">
+          <lightning-input-name label="Legal Name" salutation={salutation} first-name={firstName} last-name={lastName}
+            options={salutationOptions} name="name" onchange={handleUniversalChange} required>
+          </lightning-input-name>
+        </div>
+      </div>
+
+      <div class="slds-grid slds-wrap slds-gutters">
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+          <lightning-input type="email" label="Email Address" name="email" value={email}
+            onchange={handleUniversalChange} required>
+          </lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+          <lightning-combobox name="gender" label="Gender" value={gender} options={genderOptions}
+            onchange={handleUniversalChange} placeholder="Select an Option">
+          </lightning-combobox>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+          <lightning-input type="number" label="Passenger Age" name="age" value={age} onchange={handleUniversalChange}
+            required>
+          </lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_medium">
+          <lightning-input type="text" label="Passport Number" name="passport" value={passportNumber}
+            onchange={handleUniversalChange} required>
+          </lightning-input>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</template>

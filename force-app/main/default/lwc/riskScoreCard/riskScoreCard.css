@@ -1,0 +1,17 @@
+/* riskScoreCard.css
+   SLDS utility classes override is not always sufficient inside datatable cells.
+   These rules ensure the colour classes applied via cellAttributes actually render.
+*/
+
+.slds-text-color_error {
+  color: #ba0517 !important;
+  font-weight: bold;
+}
+
+.slds-text-color_success {
+  color: #2e844a !important;
+}
+
+.slds-text-color_weak {
+  color: #706e6b !important;
+}

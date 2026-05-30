@@ -1,0 +1,54 @@
+<!--
+    @description : Parent component — owns wire data, publishes LMS alerts.
+                   Sits on the Account record page via Lightning App Builder.
+    @component   : portfolioRiskDashboard
+-->
+<template>
+  <lightning-card title="Portfolio Risk Command Center" icon-name="custom:custom17">
+    <div class="slds-var-m-around_medium">
+
+      <!-- LOADING STATE -->
+      <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading Holdings..." size="medium"></lightning-spinner>
+      </template>
+
+      <!-- DATA LOADED -->
+      <template if:false={isLoading}>
+
+        <!-- HAS HOLDINGS -->
+        <template if:false={isEmpty}>
+          <c-risk-score-card holdings={holdings} aggregate-score={totalRiskScore}></c-risk-score-card>
+        </template>
+
+        <!-- NO HOLDINGS -->
+        <template if:true={isEmpty}>
+          <div class="slds-illustration slds-illustration_small">
+            <img src="/img/chatter/desert.svg" class="slds-illustration__svg" alt="" />
+            <div class="slds-illustration__body">
+              <h3 class="slds-text-heading_medium">No Holdings Found</h3>
+              <p class="slds-text-body_regular">
+                Add stocks to this account's portfolio to see risk analysis.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- ERROR STATE -->
+        <template if:true={error}>
+          <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <lightning-icon icon-name="utility:error" alternative-text="Error" size="x-small"
+              class="slds-m-right_x-small"></lightning-icon>
+            <h2>
+              Error loading portfolio data.
+              <template if:true={error.body}>
+                {error.body.message}
+              </template>
+            </h2>
+          </div>
+        </template>
+
+      </template>
+
+    </div>
+  </lightning-card>
+</template>

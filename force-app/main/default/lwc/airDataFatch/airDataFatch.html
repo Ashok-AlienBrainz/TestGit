@@ -1,0 +1,94 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 05-12-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+  <lightning-card>
+    <div class="slds-p-around_medium slds-border_bottom slds-theme_shade">
+      <lightning-combobox name="Flight" label="Select a Flight" value={selectedId} options={airData}
+        onchange={handleChange}>
+      </lightning-combobox>
+    </div>
+    <template lwc:if={flight}>
+      <div class="slds-p-around_medium">
+
+        <div class="slds-box slds-p-around_none slds-theme_default slds-m-bottom_medium"
+          style="border: 1px solid #dddbda; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+
+          <div class="slds-p-around_medium slds-grid slds-grid_vertical-align-center slds-border_bottom">
+            <div class="slds-media slds-media_center">
+              <div class="slds-media__figure">
+                <lightning-icon icon-name="standard:flights" size="small"></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <div class="slds-text-heading_small"><strong>{flight.Airline}</strong></div>
+                <div class="slds-text-color_weak slds-text-body_small">{flight.FlightNumber}</div>
+              </div>
+            </div>
+            <div class="slds-col_bump-left">
+              <span class="slds-badge slds-theme_success">{flight.flightStatus}</span>
+            </div>
+          </div>
+
+          <div class="slds-p-around_large">
+            <div class="slds-grid slds-grid_vertical-align-center">
+              <div class="slds-col slds-size_1-of-3">
+                <p class="slds-text-title_caps slds-m-bottom_none slds-text-color_weak">Origin</p>
+                <h1 class="slds-text-heading_medium"><strong>{flight.OriginAirport}</strong></h1>
+              </div>
+              <div class="slds-col slds-size_1-of-3 slds-p-horizontal_medium" style="position: relative;">
+                <div style="border-bottom: 2px dashed #dddbda; width: 100%; position: absolute; top: 50%;"></div>
+                <lightning-icon icon-name="utility:forward" size="x-small" class="slds-align_absolute-center"
+                  style="background: white; position: relative; z-index: 1; padding: 0 10px;">
+                </lightning-icon>
+              </div>
+              <div class="slds-col slds-size_1-of-3 slds-text-align_right">
+                <p class="slds-text-title_caps slds-m-bottom_none slds-text-color_weak">Destination</p>
+                <h1 class="slds-text-heading_medium"><strong>{flight.destinationAir}</strong></h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="slds-grid slds-wrap slds-theme_shade slds-p-around_medium slds-border_top">
+            <div class="slds-col slds-size_1-of-3">
+              <p class="slds-text-title slds-m-bottom_none">Departure Time</p>
+              <p class="slds-text-body_regular">
+                <lightning-formatted-date-time value={flight.DepartureTime} hour="2-digit" minute="2-digit"
+                  day="2-digit" month="short" year="numeric">
+                </lightning-formatted-date-time>
+              </p>
+            </div>
+            <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+              <p class="slds-text-title slds-m-bottom_none">Capacity</p>
+              <p class="slds-text-body_regular">{flight.Capacity} Seats</p>
+            </div>
+            <div class="slds-col slds-size_1-of-3 slds-text-align_right">
+              <p class="slds-text-title slds-m-bottom_none">System ID</p>
+              <p class="slds-text-body_small slds-text-color_weak">{flight.Id}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+          <div class="slds-grid slds-grid_vertical-align-end slds-gutters_small">
+            <div class="slds-col slds-size_2-of-3">
+              <lightning-input type="number" label="Number of Passengers" placeholder="Enter quantity..."
+                value={passengerNumbers} onchange={passengerHandleChange} icon-name="utility:groups" required>
+              </lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+              <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small">Available: {flight.Capacity}
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </template>
+  </lightning-card>
+</template>

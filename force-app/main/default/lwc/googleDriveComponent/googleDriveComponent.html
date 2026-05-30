@@ -1,0 +1,183 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-18-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+  <lightning-card title="Google Drive Files" icon-name="doctype:gdoc" class="custom-card">
+
+    <lightning-button slot="actions" label="Upload New File" icon-name="utility:upload" variant="brand"
+      onclick={openUploadModal}></lightning-button>
+
+    <div class="full-page-container slds-var-m-top_small">
+
+      <template if:true={files}>
+        <ul class="file-list">
+          <template for:each={files} for:item="file">
+            <li key={file.id} class="slds-grid slds-align-middle slds-var-p-around_small file-list-item">
+
+              <div class="slds-col slds-grow-none slds-var-m-right_medium slds-var-m-left_small">
+                <lightning-icon icon-name="doctype:attachment" size="medium" alternative-text="File"></lightning-icon>
+              </div>
+
+              <div class="slds-col slds-grow slds-truncate">
+                <p class="slds-text-heading_small file-name" title={file.name}>{file.name}</p>
+              </div>
+
+              <div class="slds-col slds-grow-none slds-var-m-left_small action-buttons">
+                <lightning-button-icon icon-name="utility:preview" variant="border-filled"
+                  alternative-text="Preview File" title="Preview" data-id={file.id}
+                  onclick={handlePreview}></lightning-button-icon>
+                <lightning-button-icon icon-name="utility:edit" variant="border-filled" alternative-text="Edit File"
+                  title="Edit" data-id={file.id} onclick={handleEdit}></lightning-button-icon>
+                <lightning-button-icon icon-name="utility:download" variant="border-filled"
+                  alternative-text="Download File" title="Download" data-id={file.id}
+                  onclick={handleDownload}></lightning-button-icon>
+                <lightning-button-icon icon-name="utility:delete" variant="border-filled"
+                  icon-class="slds-icon-text-error" alternative-text="Delete File" title="Delete" data-id={file.id}
+                  onclick={handleDelete}></lightning-button-icon>
+              </div>
+
+            </li>
+          </template>
+        </ul>
+      </template>
+
+      <template if:true={error}>
+        <div class="slds-illustration slds-illustration_small slds-var-m-top_large">
+          <lightning-icon icon-name="utility:warning" size="large" class="slds-var-m-bottom_small"
+            variant="warning"></lightning-icon>
+          <div class="slds-text-longform">
+            <h3 class="slds-text-heading_medium">No files found</h3>
+            <p class="slds-text-body_regular slds-text-color_weak">{error}</p>
+          </div>
+        </div>
+      </template>
+
+    </div>
+
+    <template if:true={showUploadModal}>
+      <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+              onclick={closeUploadModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                size="small"></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate">Upload New File</h2>
+          </header>
+
+          <div class="slds-modal__content slds-var-p-around_large">
+            <div class="slds-m-bottom_medium">
+              <lightning-input type="file" label="Select a file to upload to Google Drive"
+                onchange={handleFileChange}></lightning-input>
+            </div>
+
+            <template if:true={filePreviewUrl}>
+              <div class="preview-box slds-m-bottom_medium">
+                <p class="slds-text-color_weak slds-m-bottom_x-small slds-text-title_caps">Image Preview</p>
+                <div class="image-wrapper slds-align_absolute-center">
+                  <img src={filePreviewUrl} alt="preview" class="preview-image" />
+                </div>
+              </div>
+            </template>
+
+            <template if:true={status}>
+              <div
+                class="slds-scoped-notification slds-media slds-media_center slds-theme_info custom-status slds-m-bottom_medium"
+                role="status">
+                <div class="slds-media__figure">
+                  <lightning-icon icon-name="utility:info" size="small" variant="inverse"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <p>{status}</p>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <footer class="slds-modal__footer">
+            <lightning-button label="Cancel" onclick={closeUploadModal} class="slds-m-right_small"></lightning-button>
+            <lightning-button label="Upload to Salesforce" variant="brand" icon-name="utility:upload"
+              onclick={uploadFile} disabled={isUploadDisabled}></lightning-button>
+          </footer>
+
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showPreview}>
+      <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large">
+        <div class="slds-modal__container">
+
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+              onclick={closePreview}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                size="small"></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 class="slds-text-heading_medium slds-hyphenate">Document Preview</h2>
+          </header>
+
+          <div class="slds-modal__content slds-var-p-around_medium modal-content-area">
+
+            <template if:true={isLoadingPreview}>
+              <lightning-spinner alternative-text="Loading preview" size="large"></lightning-spinner>
+            </template>
+
+            <template if:true={isImage}>
+              <div class="slds-align_absolute-center slds-h-100">
+                <img src={previewUrl} alt="Preview" class="modal-image" />
+              </div>
+            </template>
+
+            <template if:true={isText}>
+              <pre class="text-preview-box">{previewText}</pre>
+            </template>
+
+            <template if:true={isPdf}>
+              <div class="fallback-container slds-theme_shade slds-box">
+                <lightning-icon icon-name="doctype:pdf" size="large" class="slds-var-m-bottom_small"></lightning-icon>
+                <p class="slds-text-heading_small slds-var-m-bottom_medium">PDF cannot be previewed directly in
+                  Salesforce.</p>
+                <lightning-button variant="brand" label="Download PDF" icon-name="utility:download"
+                  onclick={handleDownloadPreview}></lightning-button>
+              </div>
+            </template>
+
+            <template if:true={isGoogleNative}>
+              <div class="fallback-container slds-theme_shade slds-box">
+                <lightning-icon icon-name="doctype:gdoc" size="large" class="slds-var-m-bottom_small"></lightning-icon>
+                <p class="slds-text-heading_small slds-var-m-bottom_medium">Google Doc/Sheet/Slide cannot be previewed
+                  natively.</p>
+                <lightning-button variant="brand" label="Download as PDF" icon-name="utility:download"
+                  onclick={handleDownloadPreview}></lightning-button>
+              </div>
+            </template>
+
+            <template if:true={isOther}>
+              <div class="fallback-container slds-theme_shade slds-box">
+                <lightning-icon icon-name="doctype:unknown" size="large"
+                  class="slds-var-m-bottom_small"></lightning-icon>
+                <p class="slds-text-heading_small slds-var-m-bottom_medium">Preview not available for this file type.
+                </p>
+                <lightning-button variant="brand" label="Download File" icon-name="utility:download"
+                  onclick={handleDownloadPreview}></lightning-button>
+              </div>
+            </template>
+
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+  </lightning-card>
+</template>

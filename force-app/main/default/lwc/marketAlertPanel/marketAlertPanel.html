@@ -1,0 +1,193 @@
+<!--
+  @description : marketAlertPanel — Risk Confirmation Panel
+                 Subscribes to RiskAlert__c LMS channel.
+                 Fires imperative callout when a breach is detected.
+                 Shows full live market data card from Twelve Data API.
+  @component   : marketAlertPanel
+  @author      : TradeSync Project
+  @last modified on : 04-29-2026
+-->
+<template>
+  <lightning-card icon-name="utility:warning">
+
+    <div slot="title" class="panel-header">
+      <span class="panel-title">Risk Confirmation Panel</span>
+      <span class="panel-subtitle">Powered by Twelve Data · Live Market Feed</span>
+    </div>
+
+    <div slot="actions">
+      <lightning-button-icon icon-name="utility:info" variant="bare" alternative-text="About this panel"
+        title="Activates when any holding drops below −8%. Calls Twelve Data API in real time to confirm the live price before your advisor takes action."></lightning-button-icon>
+    </div>
+
+    <div class="slds-var-p-around_medium slds-is-relative">
+
+      <!-- LOADING STATE -->
+      <template if:true={isLoading}>
+        <div class="loading-wrap">
+          <lightning-spinner alternative-text="Fetching live price..." size="medium"></lightning-spinner>
+          <p class="loading-label">Contacting Twelve Data API...</p>
+        </div>
+      </template>
+
+      <!-- LIVE QUOTE CARD -->
+      <template if:true={hasLiveQuote}>
+
+        <!-- Alert Banner -->
+        <div class="alert-banner">
+          <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+          <span>Critical threshold breach detected — live price confirmed below −8%</span>
+        </div>
+
+        <div class="quote-card">
+
+          <!-- Header: name + market status -->
+          <div class="quote-header">
+            <div class="quote-identity">
+              <div class="ticker-badge">{liveQuote.symbol}</div>
+              <div>
+                <p class="company-name">{liveQuote.name}</p>
+                <p class="exchange-label">{liveQuote.exchange} · {liveQuote.currency}</p>
+              </div>
+            </div>
+            <div class={marketStatusClass}>
+              <span class="status-dot"></span>
+              {marketStatus}
+            </div>
+          </div>
+
+          <div class="quote-divider"></div>
+
+          <!-- Price -->
+          <div class="price-section">
+            <div class="price-main">
+              <lightning-formatted-number value={liveQuote.close} format-style="currency" currency-code="USD"
+                minimum-fraction-digits="2"></lightning-formatted-number>
+            </div>
+            <div class={changeClass}>
+              <lightning-icon icon-name={changeIcon} size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+              {liveQuote.change} &nbsp;·&nbsp; {liveQuote.percent_change}%
+            </div>
+            <p class="updated-label">
+              <lightning-icon icon-name="utility:clock" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+              Last updated: {liveQuote.quoteDate}
+            </p>
+          </div>
+
+          <div class="quote-divider"></div>
+
+          <!-- OHLC -->
+          <div class="ohlc-section">
+            <p class="section-label">Today's session</p>
+            <div class="ohlc-grid">
+              <div class="ohlc-item">
+                <span class="ohlc-key">Open</span>
+                <span class="ohlc-val">{liveQuote.open}</span>
+                <span class="ohlc-hint">Price at market open</span>
+              </div>
+              <div class="ohlc-item">
+                <span class="ohlc-key">High</span>
+                <span class="ohlc-val high-val">{liveQuote.high}</span>
+                <span class="ohlc-hint">Session peak price</span>
+              </div>
+              <div class="ohlc-item">
+                <span class="ohlc-key">Low</span>
+                <span class="ohlc-val low-val">{liveQuote.low}</span>
+                <span class="ohlc-hint">Session floor price</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quote-divider"></div>
+
+          <!-- Volume -->
+          <div class="ohlc-section">
+            <p class="section-label">Volume activity</p>
+            <div class="ohlc-grid">
+              <div class="ohlc-item">
+                <span class="ohlc-key">Volume</span>
+                <span class="ohlc-val">
+                  <lightning-formatted-number value={liveQuote.volume}></lightning-formatted-number>
+                </span>
+                <span class="ohlc-hint">Shares traded today</span>
+              </div>
+              <div class="ohlc-item">
+                <span class="ohlc-key">Avg Volume</span>
+                <span class="ohlc-val">
+                  <lightning-formatted-number value={liveQuote.average_volume}></lightning-formatted-number>
+                </span>
+                <span class="ohlc-hint">Rolling daily average</span>
+              </div>
+              <div class="ohlc-item">
+                <span class="ohlc-key">Activity</span>
+                <span class={volumeClass}>{volumeLabel}</span>
+                <span class="ohlc-hint">Compared to average</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quote-divider"></div>
+
+          <!-- Advisor guidance -->
+          <div class="guidance-section">
+            <lightning-icon icon-name="utility:knowledge_base" size="x-small"
+              class="slds-m-right_x-small"></lightning-icon>
+            <span class="section-label" style="display:inline">Advisor guidance: </span>
+            <span class="guidance-text">{advisorGuidance}</span>
+          </div>
+
+          <!-- Source -->
+          <div class="source-row">
+            <lightning-icon icon-name="utility:connected_apps" size="xx-small"
+              class="slds-m-right_xx-small"></lightning-icon>
+            <span>Live data · Twelve Data API · Named Credential · Logged to Risk Alert Log</span>
+          </div>
+
+        </div>
+      </template>
+
+      <!-- EMPTY STATE -->
+      <template if:false={hasLiveQuote}>
+        <template if:false={isLoading}>
+          <div class="empty-state">
+
+            <div class="pulse-wrap">
+              <div class="pulse-ring"></div>
+              <lightning-icon icon-name="utility:shield" size="medium" class="pulse-icon"></lightning-icon>
+            </div>
+
+            <p class="empty-title">Monitoring active</p>
+            <p class="empty-subtitle">
+              This panel activates automatically when any holding drops below −8%.
+              The live price is confirmed via the Twelve Data API before your advisor acts.
+            </p>
+
+            <div class="trigger-info">
+              <div class="trigger-row">
+                <lightning-icon icon-name="utility:steps" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                <span>Wire detects Change % &lt; −8% on any holding</span>
+              </div>
+              <div class="trigger-row">
+                <lightning-icon icon-name="utility:broadcast" size="xx-small"
+                  class="slds-m-right_x-small"></lightning-icon>
+                <span>LMS publishes to RiskAlert__c channel</span>
+              </div>
+              <div class="trigger-row">
+                <lightning-icon icon-name="utility:connected_apps" size="xx-small"
+                  class="slds-m-right_x-small"></lightning-icon>
+                <span>Live price fetched from Twelve Data API</span>
+              </div>
+              <div class="trigger-row">
+                <lightning-icon icon-name="utility:record" size="xx-small"
+                  class="slds-m-right_x-small"></lightning-icon>
+                <span>Alert logged to Risk_Alert_Log__c for audit trail</span>
+              </div>
+            </div>
+
+          </div>
+        </template>
+      </template>
+
+    </div>
+  </lightning-card>
+</template>

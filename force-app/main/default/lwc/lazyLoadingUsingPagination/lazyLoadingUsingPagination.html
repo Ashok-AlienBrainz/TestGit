@@ -1,0 +1,23 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 01-15-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+  <lightning-card title="Lazy Loading Using Pagination" icon-name="custom:custom14">
+    <h2> currect Page : {currectPage}</h2>
+
+    <lightning-datatable key-field="Id" data={lazyData} columns={columnsList} onrowselection={handleRowSelection}
+      draft-values={draftValues} selected-rows={selectedRowsIds} onsave={handleSave}>
+    </lightning-datatable>
+    <lightning-button variant="brand" label="Previes" title="Previes" onclick={previesHandleClick}
+      disabled={previesHide}></lightning-button>
+
+    <lightning-button variant="brand" label="Next" title="Next" onclick={nextHandleClick}
+      disabled={nextHide}></lightning-button>
+
+  </lightning-card>
+
+</template>

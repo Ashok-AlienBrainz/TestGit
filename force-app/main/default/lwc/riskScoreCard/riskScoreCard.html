@@ -1,0 +1,36 @@
+<!--
+    @description : Child component — renders holdings datatable.
+                   Receives data from portfolioRiskDashboard via @api.
+                   No wire, no callout — purely presentational.
+    @component   : riskScoreCard
+-->
+<template>
+
+  <!-- EMPTY STATE -->
+  <template if:true={isEmpty}>
+    <div class="slds-illustration slds-illustration_small" aria-hidden="true">
+      <img src="/img/chatter/desert.svg" class="slds-illustration__svg" alt="" />
+      <div class="slds-illustration__figure slds-illustration__figure_svg"></div>
+      <div class="slds-illustration__body">
+        <p class="slds-text-body_regular slds-text-color_weak">
+          No holdings linked to this portfolio.
+        </p>
+      </div>
+    </div>
+  </template>
+
+  <!-- DATA STATE -->
+  <template if:false={isEmpty}>
+    <div class="slds-box slds-theme_default">
+      <h2 class="slds-text-heading_small slds-m-bottom_small">
+        Holding Analysis
+      </h2>
+
+      <div style="height: 300px;">
+        <lightning-datatable key-field="Id" data={holdings} columns={columns} hide-checkbox-column>
+        </lightning-datatable>
+      </div>
+    </div>
+  </template>
+
+</template>

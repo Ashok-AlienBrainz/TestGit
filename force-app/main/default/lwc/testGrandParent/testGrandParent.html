@@ -1,0 +1,17 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-12-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+  <lightning-card title="Event Bubbling Demo" icon-name="custom:custom11">
+    <div class="slds-p-around_medium" onnotify={handleGrandparentNotify}>
+      <p class="slds-text-heading_large">Grandparent Component</p>
+      <p>Final Status: <b class="slds-text-color_success">{grandparentMessage}</b></p>
+      <br>
+      <c-test-parent></c-test-parent>
+    </div>
+  </lightning-card>
+</template>

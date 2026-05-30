@@ -1,0 +1,111 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 05-12-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+  <article class="slds-card slds-card_boundary">
+
+    <header class="slds-page-header slds-page-header_joined">
+      <div class="slds-page-header__row">
+        <div class="slds-page-header__col-title">
+          <div class="slds-media slds-media_center">
+            <div class="slds-media__figure">
+              <lightning-icon icon-name="standard:flow" size="small" alternative-text="Booking"></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <h1 class="slds-page-header__title slds-truncate" title="Flight Reservation">
+                Flight Reservation
+              </h1>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slds-p-vertical_medium">
+        <lightning-progress-indicator current-step={currentStep} type="path" variant="base">
+          <template for:each={steps} for:item="step">
+            <lightning-progress-step label={step.label} value={step.value} key={step.value}>
+            </lightning-progress-step>
+          </template>
+        </lightning-progress-indicator>
+      </div>
+    </header>
+
+
+    <div class="slds-card__body slds-card__body_inner">
+      <div class="slds-m-vertical_medium">
+        <p>currentStep : {currentStep}</p>
+        <template lwc:if={isStepOne}>
+          <p>currentStep : {currentStep}</p>
+
+          <c-air-data-fatch selected-id={selectedId} onselectedid={handleSelectedId} air-data={airData}
+            onpassengernumber={passengerNumberChange} passenger-numbers={setPassengerValue} air-all-data={airAllData}
+            error={error}>
+          </c-air-data-fatch>
+        </template>
+
+        <template lwc:if={isStepTwo}>
+          <div class="slds-box slds-theme_default slds-m-around_medium slds-p-around_none"
+            style="border: 1px solid #dddbda; border-radius: .25rem;">
+
+            <div class="slds-p-around_medium slds-border_bottom slds-theme_shade">
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon icon-name="standard:record" size="small"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-text-heading_medium">Passenger Documentation</h2>
+                  <p class="slds-text-body_small slds-text-color_weak">Please fill in all required fields for
+                    verification.</p>
+                </div>
+              </div>
+            </div>
+            <template for:each={visiblePassengers} for:item="passenger">
+              <c-air-passenger-details key={passenger.id} passenger-index={passenger.id}
+                onpassengerchange={handlePassengerChange} passenger-label={passenger.label}
+                passenger-data={passenger.passengerData}> </c-air-passenger-details>
+
+            </template>
+            <template lwc:if={showAddMoreButton}>
+              <div class="slds-m-top_medium">
+                <lightning-button label="Add More Passenger Detail" variant="brand" onclick={handleAddMorePassenger}>
+                </lightning-button>
+              </div>
+            </template>
+
+          </div>
+
+        </template>
+
+      </div>
+    </div>
+    <!-- <div class="slds-card__body slds-card__body_inner">
+      <div class="slds-m-vertical_medium">
+      
+      </div>
+    </div> -->
+
+    <template lwc:if={selectedId}>
+      <footer
+        class="slds-card__footer slds-grid slds-grid_align-spread slds-p-around_medium slds-theme_shade slds-border_top">
+        <div class="slds-col">
+          <lightning-button label="Cancel" onclick={CancelHandleClick} icon-name="utility:close">
+          </lightning-button>
+        </div>
+        <div class="slds-col">
+          <lightning-button label="Previous" onclick={handlePrevious} disabled={isFirstStep}>
+          </lightning-button>
+
+          <lightning-button label="Next" variant="brand" onclick={handleNext} disabled={isLastStep}
+            class="slds-m-left_small">
+          </lightning-button>
+        </div>
+      </footer>
+    </template>
+
+
+  </article>
+</template>
